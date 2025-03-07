@@ -127,8 +127,26 @@ def observeUpdate(self, observation, gameState):
     position is known.
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    noisyDistance = observation
+    pacmanPosition = gameState.getPacmanPosition()
+    jailPosition = self.getJailPosition()
+
+    allPossible = util.Counter()
+
+    # ghost captured will go to jail with probability 1
+    if noisyDistance is None:
+        allPossible[jailPosition] = 1.0
+    else:
+        for p in self.allPositions:
+            # self.getObservationProb for probability calculation
+            prob = self.getObservationProb(noisyDistance, pacmanPosition, p, jailPosition)
+            allPossible[p] = prob * self.beliefs[p]
+
+    self.beliefs = allPossible
+
+    #raiseNotDefined()
     self.beliefs.normalize()
+
 
 
 def elapseTime(self, gameState):
@@ -141,4 +159,19 @@ def elapseTime(self, gameState):
     current position is known.
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    # storage of updated beliefs
+    allPossible = util.Counter()
+
+    # calculate next pos
+    for oldPos in self.allPositions:
+        newPosDist = self.getPositionDistribution(gameState, oldPos)
+
+        # update beliefs
+        for newPos, prob in newPosDist.items():
+            allPossible[newPos] += self.beliefs[oldPos] * prob
+
+    allPossible.normalize()
+
+    self.beliefs = allPossible
+
+    #raiseNotDefined()
