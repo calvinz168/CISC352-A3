@@ -41,7 +41,15 @@ def normalize(self):
     {}
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    total_value = self.total()
+    
+    if total_value == 0:
+        return
+    
+    for key in self:
+        self[key] /= total_value
+
+    # raiseNotDefined()
 
 def sample(self):
     """
@@ -65,7 +73,20 @@ def sample(self):
     0.0
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    total_value = self.total()
+    
+    if total_value == 0:
+        raise ValueError("Cannot sample from an empty or zero-valued distribution.")
+    
+    rand_value = random.random() * total_value
+    cumulative = 0
+    
+    for key, weight in self.items():
+        cumulative += weight
+        if rand_value <= cumulative:
+            return key
+        
+    # raiseNotDefined()
 
 
 def getObservationProb(self, noisyDistance, pacmanPosition, ghostPosition, jailPosition):
@@ -73,7 +94,20 @@ def getObservationProb(self, noisyDistance, pacmanPosition, ghostPosition, jailP
     Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+
+    # If the ghost is in jail, the sensor must return None with probability 1
+    if ghostPosition == jailPosition:
+        return 1.0 if noisyDistance is None else 0.0
+
+    # If the noisy distance is None, the ghost must be in jail, which it isn't
+    if noisyDistance is None:
+        return 0.0
+
+    trueDistance = util.manhattanDistance(pacmanPosition, ghostPosition)
+
+    return busters.getObservationProbability(noisyDistance, trueDistance)
+    
+    # raiseNotDefined()
 
 
 
